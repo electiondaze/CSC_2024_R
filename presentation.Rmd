@@ -1,0 +1,251 @@
+---
+title: "CSC 2024 - R Possbilities"
+author: "Jim Northmore"
+date: "2024-03-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Install libraries
+install.packages("tidyverse")
+install.packages("janitor")
+install.packages("frequency")
+```
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(janitor)
+library(frequency)
+```
+
+```{r}
+# Clear environment
+rm(list = ls())
+```
+
+```{r}
+# Import person data and inspect
+ex_1 <- read.csv("nm.csv")
+ex_1
+```
+```{r}
+# View dimensions and column names
+dim(ex_1)
+colnames(ex_1)
+```
+
+
+```{r}
+# Inspect County and Sex value counts
+table(ex_1$County.Name)
+table(ex_1$Sex)
+f1 <- freq(ex_1$County.Name)
+f1
+f2 <- freq(ex_1$Sex)
+f2
+```
+
+```{r}
+# Inspect scores
+ex_1 %>%
+  group_by(Sex) %>%
+  summarise(red_med = median(Red.Chile.Support),
+            red_mean = mean(Red.Chile.Support),
+            red_max = max(Red.Chile.Support),
+            red_min = min(Red.Chile.Support),
+            green_mean = median(Green.Chile.Support),
+            xmas_mean = median(Xmas.Chile.Support)
+            ) 
+```
+
+```{r}
+# Column names before
+colnames(ex_1)
+```
+
+```{r}
+# clean headers: all lowercase characters, no spaces, periods, or special characters
+# create new object called 'nm' with cleaned headers
+nm <- clean_names(ex_1)
+colnames(nm)
+```
+
+```{r}
+# Do we have null/NA/blank values?
+colSums(is.na(nm))
+```
+
+```{r}
+# remove rows with blank or null values
+nm <- na.omit(nm)
+dim(nm)
+```
+```{r}
+# Do we have null/NA/blank values still?
+# Trust but verify
+colSums(is.na(nm))
+```
+
+```{r}
+# Create summary statistics
+nm %>%
+  group_by(sex) %>%
+  summarise(red_med = median(red_chile_support),
+            red_mean = mean(red_chile_support),
+            red_max = max(red_chile_support),
+            red_min = min(red_chile_support),
+            green_mean = median(green_chile_support),
+            xmas_mean = median(xmas_chile_support))
+```
+
+```{r}
+# create a histogram
+ggplot(nm, aes(x=red_chile_support)) + geom_histogram()
+```
+
+```{r}
+# create two histograms
+ggplot(nm, aes(x=green_chile_support)) + geom_histogram()
+ggplot(nm, aes(x=xmas_chile_support)) + geom_histogram()
+```
+
+```{r}
+# Doing this for every county would take a long time.
+# 
+plot <- ggplot(data = nm, aes(x = xmas_chile_support)) + geom_histogram(binwidth = 10)
+plot + facet_wrap(~county_name)
+```
+
+```{r}
+# need 20,000 people from 430,481 for an experiment
+# control for gender
+### males
+bern_m <- filter(nm, county_name == "Bernalillo" & sex == "M")
+dac_m <- filter(nm, county_name == "Dona Ana" & sex =="M")
+sf_m <- filter(nm, county_name == "Santa Fe" & sex =="M")
+sand_m <- filter(nm, county_name == "Sandoval" & sex =="M")
+sj_m <- filter(nm, county_name == "San Juan" & sex =="M")
+mck_m <- filter(nm, county_name == "McKinley" & sex =="M")
+val_m <- filter(nm, county_name == "Valencia" & sex =="M")
+chav_m <- filter(nm, county_name == "Chaves" & sex =="M")
+eddy_m <- filter(nm, county_name == "Eddy" & sex =="M")
+lea_m <- filter(nm, county_name == "Lea" & sex =="M")
+otero_m <- filter(nm, county_name == "Otero" & sex =="M")
+
+### females
+bern_f <- filter(nm, county_name == "Bernalillo" & sex == "F")
+dac_f <- filter(nm, county_name == "Dona Ana" & sex == "F")
+sf_f <- filter(nm, county_name == "Santa Fe" & sex == "F")
+sand_f <- filter(nm, county_name == "Sandoval" & sex == "F")
+sj_f <- filter(nm, county_name == "San Juan" & sex == "F")
+mck_f <- filter(nm, county_name == "McKinley" & sex == "F")
+val_f <- filter(nm, county_name == "Valencia" & sex == "F")
+chav_f <- filter(nm, county_name == "Chaves" & sex == "F")
+eddy_f <- filter(nm, county_name == "Eddy" & sex == "F")
+lea_f <- filter(nm, county_name == "Lea" & sex =="F")
+otero_f <- filter(nm, county_name == "Otero" & sex =="F")
+curry_f <- filter(nm, county_name == "Curry" & sex =="F")
+rioa_f <- filter(nm, county_name == "Rio Arriba" & sex =="F")
+taos_f <- filter(nm, county_name == "Taos" & sex =="F")  
+```
+
+
+```{r}
+# sample subsets: sample_n(df, samplesize#)
+## Males
+bern_ms <- sample_n(bern_m, 3000)
+chav_ms <- sample_n(chav_m, 365)
+dac_ms <-sample_n(dac_m, 900)
+eddy_ms <- sample_n(eddy_m, 400)
+lea_ms <- sample_n(lea_m, 400)
+mck_ms <- sample_n(mck_m, 565)
+otero_ms <- sample_n(otero_m, 400)
+sand_ms <-sample_n(sand_m, 770)
+sf_ms <- sample_n(sf_m, 775)
+sj_ms  <- sample_n(sj_m, 630)
+val_ms <- sample_n(val_m, 565)
+
+## Females
+bern_fs <- sample_n(bern_f, 3465)
+chav_fs <- sample_n(chav_f, 500)
+curry_fs <- sample_n(curry_f, 365)
+dac_fs <- sample_n(dac_f, 1035)
+eddy_fs <- sample_n(eddy_f, 500)
+lea_fs <- sample_n(lea_f, 500)
+mck_fs <- sample_n(mck_f, 600)
+otero_fs <- sample_n(otero_f, 500)
+rioa_fs <- sample_n(rioa_f, 365)
+sand_fs <- sample_n(sand_f, 835)
+sf_fs <- sample_n(sf_f, 900)
+sj_fs <- sample_n(sj_f, 700)
+taos_fs <- sample_n(taos_f, 365)
+val_fs <- sample_n(val_f, 600)
+```
+
+```{r}
+# combine sample dataframes by gender, then to one dataframe
+males <- rbind(bern_ms, chav_ms, dac_ms, eddy_ms, lea_ms, mck_ms, otero_ms, sand_ms, sf_ms, sj_ms, val_ms)
+
+females <- rbind(bern_fs, chav_fs, curry_fs, dac_fs, eddy_fs, lea_fs, mck_fs, otero_fs, rioa_fs, sand_fs, sf_fs, sj_fs, taos_fs, val_fs)
+
+upload <- rbind(males, females)
+dim(upload)
+```
+
+```{r}
+# write csv file for upload to platform
+write.csv(upload, "tool_upload_file.csv")
+```
+
+```{r}
+# load data
+# libraries are still loaded!
+age <- read.csv("state_age.csv")
+pop <- read.csv("state_population.csv")
+```
+
+```{r}
+age
+pop
+```
+
+```{r}
+age <- clean_names(age)
+pop <- clean_names(pop)
+age
+pop
+```
+
+```{r}
+# join two files
+joined <- left_join(age, pop, by = c("stusab_code" = "stusab"))
+joined
+```
+```{r}
+colnames(joined)
+```
+
+```{r}
+# select needed columns
+selected <- joined %>%
+  select(state.x,stusab_code, x13_17, x18_24, x25_64, age_65_plus, all_18_plus, x04012020_population, house_of_reps)
+selected
+```
+```{r}
+complete <- selected %>%
+  rename(state = state.x,
+         state_code = stusab_code,
+         teens = x13_17,
+         young_adult = x18_24,
+         adults = x25_64,
+         seniors = age_65_plus,
+         population_2020 = x04012020_population
+        )
+complete
+```
+
