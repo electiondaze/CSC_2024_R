@@ -33,12 +33,12 @@ rm(list = ls())
 ex_1 <- read.csv("nm.csv")
 ex_1
 ```
+
 ```{r}
 # View dimensions and column names
 dim(ex_1)
 colnames(ex_1)
 ```
-
 
 ```{r}
 # Inspect County and Sex value counts
